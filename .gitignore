@@ -1,5 +1,5 @@
-.terraform.lock.hcl  # the lock file for terraform
-.terraform  # the subdir where tf modules are installed
-.terraform.tfstate.lock.info  # the lock file while running tf
-terraform.tfstate  # the state file
-terraform.tfstate.backup  # the backup state file
+.terraform.lock.hcl 
+.terraform
+.terraform.tfstate.lock.info
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup

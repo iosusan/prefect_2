@@ -1,0 +1,21 @@
+plugin: amazon.aws.aws_ec2                                                                                               
+ 
+regions:
+  - us-east-1
+ 
+filters:
+  instance-state-name: running
+  tag:Name:
+    - prefect2-ec2-0
+    - prefect2-ec2-1
+ 
+keyed_groups:
+  - key: tags['Name']
+    parent_group: 'prefect2'
+ 
+hostnames:
+  - 'tag:Name'
+ 
+compose:
+  ansible_host: instance_id
+  ansible_connection:   'community.aws.aws_ssm'

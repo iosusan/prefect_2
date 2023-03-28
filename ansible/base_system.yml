@@ -1,0 +1,25 @@
+---
+# playbook to install prefect2 instances base system
+# the amis are already ubuntu22.04
+# python3 and python3-dev are already present
+
+- name: playbook to set up prefect2 instances
+  hosts: prefect2
+  become: true
+  vars:
+    ansible_connection: ssh
+    ansible_port: 22
+    ansible_user: ubuntu
+    ansible_ssh_common_args: -o ProxyCommand="sh -c \"aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'\" "
+    ansible_ssh_extra_args: -o StrictHostKeyChecking=no -i {{ lookup('env', 'HOME') }}/.ssh/wa-ops.pem
+  tasks:
+    - name: apt install python3-pip
+      apt:
+        name: python3-pip
+        state: present
+        update_cache: yes
+    - name: pip install prefect
+      pip:
+        name: prefect
+        state: present
+        executable: /usr/bin/pip3

@@ -30,3 +30,36 @@ curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/instal
 # tfsec
 curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
 ```
+
+Please install these tools by running the script
+
+```
+bash utils/install_pre_commit_tools.sh
+```
+
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+No requirements.
+
+## Providers
+
+No providers.
+
+## Modules
+
+No modules.
+
+## Resources
+
+No resources.
+
+## Inputs
+
+No inputs.
+
+## Outputs
+
+No outputs.
+<!-- END_TF_DOCS -->

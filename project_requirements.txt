@@ -1,4 +1,5 @@
 pre-commit
 ansible
 boto3
+s3fs
 

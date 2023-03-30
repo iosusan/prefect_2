@@ -8,7 +8,7 @@
 terraform {
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
+      source = "hashicorp/aws"
     }
   }
 
@@ -103,15 +103,15 @@ resource "aws_security_group" "prefect2_sg" {
   vpc_id      = aws_vpc.prefect2_vpc.id
 
   ingress {
-    description = "ssh"
+    description = "ssh acceess"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # from anywhere
   }
 
-   ingress {
-    description = "prefect2"
+  ingress {
+    description = "prefect2 UI acceess"
     from_port   = 4200
     to_port     = 4200
     protocol    = "tcp"
@@ -119,6 +119,7 @@ resource "aws_security_group" "prefect2_sg" {
   }
 
   egress {
+    description = "all traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -151,15 +152,15 @@ resource "aws_instance" "prefect2_worker" {
   vpc_security_group_ids = [aws_security_group.prefect2_sg.id]
 
   iam_instance_profile = aws_iam_instance_profile.prefect2_ec2_ssm_instance_profile.name
-  key_name = "wa-ops"
+  key_name             = "wa-ops"
 
   associate_public_ip_address = true # this is required to acceess the instances from the internet
-  
+
   # this is a security restriction to prevent the metadata service from being accessed freely
   metadata_options {
     http_endpoint = "enabled"
-    http_tokens = "required"
-  } 
+    http_tokens   = "optional" #"required"
+  }
 
   tags = {
     Name    = "prefect2-ec2-${count.index}"

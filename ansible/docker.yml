@@ -1,0 +1,55 @@
+---
+# this playbook installs docker stuff into the ubuntu 22.04 ami
+- name: docker installation playbook
+
+  hosts: all
+  become: true
+  vars:
+    ansible_connection: ssh
+    ansible_port: 22
+    ansible_user: ubuntu
+    ansible_ssh_common_args: -o ProxyCommand="sh -c \"aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'\" "
+    ansible_ssh_extra_args: -o StrictHostKeyChecking=no -i {{ lookup('env', 'HOME') }}/.ssh/wa-ops.pem
+
+  tasks:
+    - name: install required apt packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: yes
+
+    - name: add docker gpg key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: add docker repo
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable
+        state: present
+
+    - name: update apt and install docker ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: yes
+
+    - name: install docker module for /usr/bin/python3
+      pip:
+        name: docker
+        state: present
+        executable: /usr/bin/pip3
+
+    - name: add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+

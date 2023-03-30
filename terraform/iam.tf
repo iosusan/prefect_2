@@ -27,14 +27,11 @@ resource "aws_iam_role" "prefect2_ec2_ssm_role" {
   }
 
   managed_policy_arns = [
-    aws_iam_policy.prefect2_ssm_session_policy.arn
+    aws_iam_policy.prefect2_ssm_session_policy.arn,
+    aws_iam_policy.prefect2_s3_deployments_policy.arn
   ]
 }
 
-resource "aws_iam_role_policy_attachment" "prefect2_ec2_role_policy_attachment" {
-  role       = aws_iam_role.prefect2_ec2_ssm_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
 
 # create an instance profile for the ec2 instances
 resource "aws_iam_instance_profile" "prefect2_ec2_ssm_instance_profile" {
@@ -83,8 +80,42 @@ resource "aws_iam_policy" "prefect2_ssm_session_policy" {
         Resource = "arn:aws:kms:us-east-1:461557490742:key/54a5fd33-0104-4408-a51d-1bfece71ecd5"
       }
     ]
-  }) 
-  
+  })
+
+}
+
+# a policy that allows the readwrite access to the s3 bucket for deployments
+resource "aws_iam_policy" "prefect2_s3_deployments_policy" {
+  name = "prefect2_s3_deployments_policy"
+  path = "/projects/prefect2/"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation",
+          "s3:ListBucketMultipartUploads",
+          "s3:ListBucketVersions"
+        ],
+        Resource = "arn:aws:s3:::wa-prefect2-deployments"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:AbortMultipartUpload",
+          "s3:ListMultipartUploadParts"
+        ],
+        Resource = "arn:aws:s3:::wa-prefect2-deployments/*"
+      }
+    ]
+  })
+
 }
 
 # now add the policy to the group

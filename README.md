@@ -6,6 +6,12 @@ This folder contains the terraform scripts to deploy the infrastructure
 ## ansible
 This folder contains the ansible scripts to configure the deployed infrastructure
 
+## infra
+This project makes extensive use of the s3 bucket wa-prefect2-deployments
+
+- stores the terraform tfstate file
+- uploads the deployment artifacts to the s3 bucket
+
 
 ## requirements
 

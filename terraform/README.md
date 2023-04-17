@@ -3,7 +3,7 @@ This terraform script uses AWS infra, so proper credentials need to be set in th
 defined in ~/.aws/credentials and added to tf file
 
 # Requirements
-The terraform binary, a vortualenv with the project_requirements.txt installed
+The terraform binary, a virtualenv with the project_requirements.txt installed
 
 # Files
 ec2.tf contains the ec2 instances stuff

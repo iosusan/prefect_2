@@ -27,6 +27,7 @@ resource "aws_vpc" "prefect2_vpc" {
   }
 }
 
+
 # then a private subnet within the vpc
 resource "aws_subnet" "prefect2_private_subnet" {
   vpc_id            = aws_vpc.prefect2_vpc.id
@@ -89,10 +90,60 @@ resource "aws_route_table" "prefect2_route_table" {
 }
 
 # and associate the route
-resource "aws_route_table_association" "prefect2_route_table_association" {
+resource "aws_route_table_association" "prefect2_public_route_table_association" {
   subnet_id      = aws_subnet.prefect2_public_subnet.id
   route_table_id = aws_route_table.prefect2_route_table.id
 }
+
+# lets create a NAT gateway for the private subnet
+# first we need an elastic ip
+resource "aws_eip" "prefect2_nat_eip" {
+  vpc = true
+
+  tags = {
+    Name    = "prefect2-nat-eip"
+    Project = "prefect2"
+    Team    = "engineering"
+    Status  = "proof-of-concept"
+  }
+}
+
+# now the NAT gateway
+resource "aws_nat_gateway" "prefect2_nat_gateway" {
+  allocation_id = aws_eip.prefect2_nat_eip.id
+  subnet_id     = aws_subnet.prefect2_public_subnet.id
+
+  tags = {
+    Name    = "prefect2-nat-gateway"
+    Project = "prefect2"
+    Team    = "engineering"
+    Status  = "proof-of-concept"
+  }
+}
+
+# and a route to the NAT gateway
+resource "aws_route_table" "prefect2_private_route_table" {
+  vpc_id = aws_vpc.prefect2_vpc.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.prefect2_nat_gateway.id
+  }
+
+  tags = {
+    Name    = "prefect2-private-route-table"
+    Project = "prefect2"
+    Team    = "engineering"
+    Status  = "proof-of-concept"
+  }
+}
+
+# finally we associate the private route table with the private subnet
+resource "aws_route_table_association" "prefect2_private_route_table_association" {
+  subnet_id      = aws_subnet.prefect2_private_subnet.id
+  route_table_id = aws_route_table.prefect2_private_route_table.id
+}
+
 
 
 # lets create a security group for the ec2 instances

@@ -24,16 +24,27 @@
         state: present
         executable: /usr/bin/pip3
         version: "<39.0.0"
+    - name: pip install awscli
+      pip:
+        name: awscli
+        state: present
+        executable: /usr/bin/pip3
     - name: pip install prefect
       pip:
         name: prefect
         state: present
         executable: /usr/bin/pip3
-    - name: pip install s3fs
+    - name: pip install prefect-aws boto3 s3fs
       pip:
-        name: s3fs
+        name: 
+          - prefect-aws
+          - boto3
+          - s3fs
         state: present
         executable: /usr/bin/pip3
+    - name: configure the aws region
+      shell: aws configure set region us-east-1
+
 
     # - name: pip install openssl>22.1.0
     #   pip:

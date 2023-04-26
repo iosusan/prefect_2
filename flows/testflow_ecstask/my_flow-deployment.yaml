@@ -1,0 +1,51 @@
+###
+### A complete description of a Prefect Deployment for flow 'my-flow'
+###
+name: ecs_testflow
+description: null
+version: 6a1d62fbfe279bea5c13fa2153e70194
+# The work queue that will handle this deployment's runs
+work_queue_name: default
+work_pool_name: default-agent-pool
+tags: []
+parameters: {}
+schedule: null
+is_schedule_active: true
+infra_overrides: {}
+
+###
+### DO NOT EDIT BELOW THIS LINE
+###
+flow_name: my-flow
+manifest_path: null
+infrastructure:
+  type: process
+  env: {}
+  labels: {}
+  name: null
+  command: null
+  stream_output: true
+  working_dir: null
+  _block_document_id: 1f2b55cd-f8d5-4bca-a6ec-b3932f475ef9
+  _block_document_name: anonymous-89b14db0-ad3c-4fc3-94de-e916bc38d75c
+  _is_anonymous: true
+  block_type_slug: process
+  _block_type_slug: process
+storage:
+  bucket_path: wa-prefect2-deployments
+  aws_access_key_id: null
+  aws_secret_access_key: null
+  _block_document_id: f3e0b269-2d86-4661-a6af-73bf49cff14f
+  _block_document_name: s3-deployment-storage
+  _is_anonymous: false
+  block_type_slug: s3
+  _block_type_slug: s3
+path: ''
+entrypoint: testflow_ecstask.py:my_flow
+parameter_openapi_schema:
+  title: Parameters
+  type: object
+  properties: {}
+  required: null
+  definitions: null
+timestamp: '2023-04-20T16:06:42.993197+00:00'

@@ -28,7 +28,8 @@ resource "aws_iam_role" "prefect2_ec2_ssm_role" {
 
   managed_policy_arns = [
     aws_iam_policy.prefect2_ssm_session_policy.arn,
-    aws_iam_policy.prefect2_s3_deployments_policy.arn
+    aws_iam_policy.prefect2_s3_deployments_policy.arn,
+    aws_iam_policy.prefect2_ecs_policy.arn
   ]
 }
 
@@ -117,6 +118,94 @@ resource "aws_iam_policy" "prefect2_s3_deployments_policy" {
   })
 
 }
+
+resource "aws_iam_policy" "prefect2_ecs_policy" {
+  name = "prefect2_ecs_policy"
+  path = "/projects/prefect2/"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "ecs:RegisterTaskDefinition",
+          "ec2:DescribeVpcs",
+          "ecs:DescribeClusters",
+          "ec2:DescribeSubnets",
+          "ecs:RunTask",
+          "ecs:DescribeTasks",
+          "logs:CreateLogStream",
+          "logs:CreateLogGroup",
+          "logs:PutLogEvents",
+          "iam:PassRole",
+          "ecs:DeregisterTaskDefinition"
+        ],
+        Resource = "*"
+      }
+
+    ]
+  })
+}
+
+# the roles for the ECS access ##############################################
+# these roles will be used by the ECS tasks
+# - ecs_task_execution_role
+# - ecs_task_role
+
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecs-task-execution-role"
+ 
+  assume_role_policy = <<EOF
+{
+ "Version": "2012-10-17",
+ "Statement": [
+   {
+     "Action": "sts:AssumeRole",
+     "Principal": {
+       "Service": "ecs-tasks.amazonaws.com"
+     },
+     "Effect": "Allow",
+     "Sid": ""
+   }
+ ]
+}
+EOF
+
+  managed_policy_arns = [
+    aws_iam_policy.prefect2_ecs_policy.arn
+  ]
+}
+
+
+
+resource "aws_iam_role" "ecs_task_role" {
+  name = "ecs-task-role"
+ 
+  assume_role_policy = <<EOF
+{
+ "Version": "2012-10-17",
+ "Statement": [
+   {
+     "Action": "sts:AssumeRole",
+     "Principal": {
+       "Service": "ecs-tasks.amazonaws.com"
+     },
+     "Effect": "Allow",
+     "Sid": ""
+   }
+ ]
+}
+EOF
+}
+ 
+resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-policy-attachment" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+# we may nbeed to attath policies to ecs_task_role aswell such as s3 access, etcc
+####################################################################################
 
 # now add the policy to the group
 resource "aws_iam_group_policy_attachment" "prefect2_ssm_session_policy_attachment" {

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "stopping prefect2 server in prefect2-ec2-1"
+echo "stopping prefect2 agenst in prefect2-ec2-1"
 # get the agent instance id, prefect2-ec2-1
 AGENT_ID=$(aws ec2 describe-instances --filters 'Name=tag:Name,Values=prefect2-ec2-1' --output text --query 'Reservations[*].Instances[*].InstanceId')
 echo "got agent's instance id $AGENT_ID"

@@ -139,7 +139,8 @@ resource "aws_iam_policy" "prefect2_ecs_policy" {
           "logs:CreateLogGroup",
           "logs:PutLogEvents",
           "iam:PassRole",
-          "ecs:DeregisterTaskDefinition"
+          "ecs:DeregisterTaskDefinition",
+          "ecr:GetAuthorizationToken"
         ],
         Resource = "*"
       }

@@ -6,6 +6,7 @@ import sys
 def myfunc(param):
     # this function waits random 1-3 seconds before returning
     time.sleep(randint(1, 3))
+    print(f"myfunc: {param}")
     return f"finished {param}"
 
 
